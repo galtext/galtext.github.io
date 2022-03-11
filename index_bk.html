@@ -289,10 +289,9 @@ There is an abundance of unlabeled data in the real world, but task-specific unl
           <figcaption>  <b>Table 1</b>: RoBERTa base and GAL self-training results on GLUE dev sets </figcaption>
     </figure>
       <p>
-      Similarly, we first train a teacher model from the labeled training data. Then we can annotate the unlabeled data with the aid of the teacher model. Eventually, we can compress the knowledge of the teacher model into a compact student model via the original training data and pseudo-labeled synthetic data. test
-      <!--<d-cite key="du2020self"></d-cite>-->
-      <d-cite key="xu2020bert"></d-cite>
-      <!--<d-cite key="goodfellow2014generative, radford2015unsupervised"></d-cite> -->
+      Similarly, we first train a teacher model from the labeled training data. Then we can annotate the unlabeled data with the aid of the teacher model. Eventually, we can compress the knowledge of the teacher model into a compact student model via the original training data and pseudo-labeled synthetic data. 
+We compare GAL with the following baselines:  BERT-Theseus<d-cite key="xu2020bert"></d-cite>,
+BERT-PKD<d-cite key="sun2019patient"></d-cite>, tinyBERT<d-cite key="jiao2019tinybert"></d-cite>, MATE-KD<d-cite key="rashid2021mate"></d-cite>, DistilRoBERTa<d-cite key="Sanh2019DistilBERTAD"></d-cite>, and DistilRoBERTa + KD (standard KD) and DistilRoBERTa + RT (round-trip translation).
       </p>
 
       <figure  style="grid-column: text">
@@ -300,25 +299,24 @@ There is an abundance of unlabeled data in the real world, but task-specific unl
           <figcaption style="display:flex; justify-content: center"> <b>Table 2</b>: GLUE test results for a 6-layer transformer.  GAL establishes a new state-of-the-art on KD for NLP.  </figcaption>
       </figure>
 
-      <figure  style="grid-column: text">
-          <img src="images/unconditional_faces.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="display:flex; justify-content: center"> Selected example generations of unconditional 1024&#215;1024 faces.  </figcaption>
-      </figure>
-
-      <figure  style="grid-column: text">
-          <img src="images/class_cond_images.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="display:flex; justify-content: center"> Selected example generations of class conditional 256&#215;256 natural images. Each row contains examples from a particular class.  </figcaption>
-      </figure>
-
 <h3>GAL for Prompt-based Few-shot Learning</h3>
 <p>
 In addition to the fine-tuning paradigm, we also test GAL on prompt-based few-shot learning, where one can leverage LLMs to correctly predict the inputs' labels by conditioning on a prompt, which consists of an instruction, a few labeled instances, and a new unlabeled input. We apply GAL to prompt-based few-shot learning. Specifically, we present k labeled examples as a prompt to GPT-J, an open-sourced re-implementation of GPT-3-6B, and generate m synthetic examples, followed by the corresponding labels. Note that to mitigate noisy outputs, the generation of each synthetic example only conditions on the original k labeled examples. Finally, we concatenate the original k examples and m synthetic examples, and conduct a (k+m)-shot learning experiment with GPT-J.
 </p> 
+      <figure  style="grid-column: text">
+          <img src="images/few_shot.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="display:flex; justify-content: center"> <b>Table 3</b>: Few-shot learning results for GPT-J (6B)<d-cite key="gpt-j"></d-cite> on four NLP datasets. Accuracy is reported for these datasets.  </figcaption>
+      </figure>
 
 <h4>GAL for Other Classification Tasks </h4>
 <p>
 To demonstrate the universality of GAL, we also employ it for tabular and image classification tasks. According to Table 4 and 5, GAL is effective on tabular and image classification tasks as well.
 </p>
+      <figure  style="grid-column: text">
+          <img src="images/cv.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+
+          <figcaption style="display:flex; justify-content: center"> <b>Table 4</b>:  Classification error rates on CIFAR-10 (an image classification task) test set with varying amounts of synthetic data for three different model architectures. </figcaption>
+      </figure>
       
 
 <h3>Citation</h3>

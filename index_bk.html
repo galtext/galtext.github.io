@@ -211,11 +211,6 @@ ul.authors.affiliations li {
     color: rgb(126,126,126);
 }
 
-figcaption {
-  color: white;
-  padding: 2px;
-  text-align: center;
-}
 
 
 </style>
@@ -265,12 +260,12 @@ figcaption {
     </p>
     <h3>Text Synthesization via GPT2</h3>
     <p>
-There is an abundance of unlabeled data in the real world, but task-specific unlabeled data can be challenging to find. For instance, one cannot find in-domain unlabeled text conforming to the input distribution of a specific NLP task from the <a href="https://gluebenchmark.com/">GLUE benchmark</a>. Some NLP tasks require an input comprising a pair of sentences with a particular relationship. If task-specific unlabeled data were available, we could use them for self-training and knowledge distillation. To fill in this gap, we consider using LLMs as a means of data synthesizer. As shown in Figure 1, we first finetune a GPT2 model on the in-domain data without specified labels to steer LLMs towards generating domain-specific unlabeled data. Afterward, we can generate many in-domain unlabeled data via the tailored GPT2.
+There is an abundance of unlabeled data in the real world, but task-specific unlabeled data can be challenging to find. For instance, one cannot find in-domain unlabeled text conforming to the input distribution of a specific NLP task from the <a href="https://gluebenchmark.com/">GLUE benchmark</a>. Some NLP tasks require an input comprising a pair of sentences with a particular relationship. If task-specific unlabeled data were available, we could use them for self-training and knowledge distillation. To fill in this gap, we consider using LLMs as a means of data synthesizer. As shown in Figure 1, we first finetune a GPT2<d-cite key="radford2019language"></d-cite> model on the in-domain data without specified labels to steer LLMs towards generating domain-specific unlabeled data. Afterward, we can generate many in-domain unlabeled data via the tailored GPT2.
     </p>
     <figure  style="grid-column: text">
         <!--<img src="images/overview.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>-->
         <img src="images/overview.png" style="width: 100%; margin-top: 1rem;"/>
-          <figcaption>  <b>Figure 1</b>: Synthesizing in-domain data by fine-tuning GPT2  </figcaption>
+          <figcaption style="display:flex; justify-content: center">  <b>Figure 1</b>: Synthesizing in-domain data by fine-tuning GPT2  </figcaption>
     </figure>
 
 
@@ -286,7 +281,7 @@ There is an abundance of unlabeled data in the real world, but task-specific unl
       </p>
     <figure  style="grid-column: text">
         <img src="images/self_training.png" style="width: 100%; margin-top: 1rem;"/>
-          <figcaption>  <b>Table 1</b>: RoBERTa base and GAL self-training results on GLUE dev sets </figcaption>
+          <figcaption style="display:flex; justify-content: center">  <b>Table 1</b>: RoBERTa base and GAL self-training results on GLUE dev sets </figcaption>
     </figure>
       <p>
       Similarly, we first train a teacher model from the labeled training data. Then we can annotate the unlabeled data with the aid of the teacher model. Eventually, we can compress the knowledge of the teacher model into a compact student model via the original training data and pseudo-labeled synthetic data. 
@@ -314,10 +309,13 @@ To demonstrate the universality of GAL, we also employ it for tabular and image 
 </p>
       <figure  style="grid-column: text">
           <img src="images/cv.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-
-          <figcaption style="display:flex; justify-content: center"> <b>Table 4</b>:  Classification error rates on CIFAR-10 (an image classification task) test set with varying amounts of synthetic data for three different model architectures. </figcaption>
+          <figcaption style="justify-content: center"> <b>Table 4</b>:  Classification error rates on CIFAR-10 (an image classification task) test set with varying amounts of synthetic data for three different model architectures. </figcaption>
       </figure>
       
+      <figure  style="grid-column: text">
+          <img src="images/table.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="justify-content: center"> <b>Table 5</b>: RoBERTa-base and GAL results on four tabular datasets from the UCI repository.   Accuracy is reported for these datasets. </figcaption>
+      </figure>
 
 <h3>Citation</h3>
 <p>

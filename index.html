@@ -251,22 +251,9 @@ ul.authors.affiliations li {
    </div>
   </div>
   <d-article>
-    <video controls autoplay loop width="1080" height="560" style="object-fit: contain;grid-column: page;">
-     <source src="videos/gal.mp4" type="video/mp4">
-     </video>
-    <h3>Summary</h3>
     <p>
-   We present <strong>G</strong>enerate, <strong>A</strong>nnotate and <strong>L</strong>earn (GAL), an approach to advancing self-training, knowledge distillation (KD), and prompt-based few-shot learning with the synthetic text. GAL leverages large pre-trained language models (LLMs) to synthesize many in-domain unlabeled data. An external classifier can annotate these unlabeled data. We manage to improve the performance of self-training and KD via the human- and machine-annotated data. On self-training, GAL can surpass a strong baseline (RoBERTa-base) by 1.5% on GLUE benchmark, whereas we push the KD performance to 84.8%, marking a new SOTA for 6-layer transformer on GLUE benchmark. Besides, our approach further improves prompt-based few-shot learning, providing an average improvement of 1.3% on four 4-shot learning NLP tasks, outperforming GPT-3-6B. Finally, we demonstrate that our approach can be applied to tabular and image classification tasks, yielding an average improvement of 1.5% and 0.8% respectively.
+    We've looked into the use of large language models (LLMs) for generating synthetic text for NLP. We’ve improved the few-shot learning performance of <a href="https://openai.com/blog/gpt-3-apps">GPT-3 6B</a> by conditioning the GPT-3 model on a few input-output examples, and using it to generate new synthetic input-output examples, which can give the model more context. In addition, we’ve found that using synthetically generated text to distill the knowledge of a compute-intensive transformer into a compact transformer leads to state-of-the-art performance for efficient NLP models on the <a href="https://gluebenchmark.com/">GLUE benchmark</a>. We call our approach GAL: <strong>G</strong>enerate, <strong>A</strong>nnotate and <strong>L</strong>earn
     </p>
-    <h3>Text Synthesization via GPT2</h3>
-    <p>
-There is an abundance of unlabeled data in the real world, but task-specific unlabeled data can be challenging to find. For instance, one cannot find in-domain unlabeled text conforming to the input distribution of a specific NLP task from the <a href="https://gluebenchmark.com/">GLUE benchmark</a>. Some NLP tasks require an input comprising a pair of sentences with a particular relationship. If task-specific unlabeled data were available, we could use them for self-training and knowledge distillation. To fill in this gap, we consider using LLMs as a means of data synthesizer. As shown in Figure 1, we first finetune a GPT2<d-cite key="radford2019language"></d-cite> model on the in-domain data without specified labels to steer LLMs towards generating domain-specific unlabeled data. Afterward, we can generate many in-domain unlabeled data via the tailored GPT2.
-    </p>
-    <figure  style="grid-column: text">
-        <!--<img src="images/overview.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>-->
-        <img src="images/overview.png" style="width: 100%; margin-top: 1rem;"/>
-          <figcaption style="display:flex; justify-content: center">  <b>Figure 1</b>: Synthesizing in-domain data by fine-tuning GPT2  </figcaption>
-    </figure>
 
 
     <!--<figure  style="grid-column: text">-->
@@ -274,47 +261,64 @@ There is an abundance of unlabeled data in the real world, but task-specific unl
           <!--<figcaption> We conduct 2-Alternatative Forced Choice Experiment human evaluation experiment. Subjects are asked to choose between reference high resolution image, and the model output. We measure the performance of the model through confusion rates (% of time, raters choose model output over reference images.) (Above) We achieve close to 50% confusion rate on the task of 16&#215;16 -> 128&#215;128 faces outperforming state of the art face super-resolution methods. (Below) We also achieve 40% confusion rate on the much difficult task of 64x64 -> 256x256 natural images outperforming regression baseline by a large margin. </figcaption>-->
     <!--</figure>-->
 
-    <p>
-      <h3>GAL for Self-training and Knowledge Distillation</h3>
-      <p>
-      Once the synthetic unlabeled data is available, we can apply self-training. We train a classifier on the labeled training data; then, the unlabeled data can be pseudo-labeled by this classifier. We can obtain an enhanced classifier using the original training data and pseudo-labeled synthetic data. This process can be iterated multiple times until the performance reaches a plateau.
-      </p>
-    <figure  style="grid-column: text">
-        <img src="images/self_training.png" style="width: 100%; margin-top: 1rem;"/>
-          <figcaption style="display:flex; justify-content: center">  <b>Table 1</b>: RoBERTa base and GAL self-training results on GLUE dev sets </figcaption>
-    </figure>
-      <p>
-      Similarly, we first train a teacher model from the labeled training data. Then we can annotate the unlabeled data with the aid of the teacher model. Eventually, we can compress the knowledge of the teacher model into a compact student model via the original training data and pseudo-labeled synthetic data. 
-We compare GAL with the following baselines:  BERT-Theseus<d-cite key="xu2020bert"></d-cite>,
-BERT-PKD<d-cite key="sun2019patient"></d-cite>, tinyBERT<d-cite key="jiao2019tinybert"></d-cite>, MATE-KD<d-cite key="rashid2021mate"></d-cite>, DistilRoBERTa<d-cite key="Sanh2019DistilBERTAD"></d-cite>, and DistilRoBERTa + KD (standard KD) and DistilRoBERTa + RT (round-trip translation).
-      </p>
 
-      <figure  style="grid-column: text">
-          <img src="images/kd.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="display:flex; justify-content: center"> <b>Table 2</b>: GLUE test results for a 6-layer transformer.  GAL establishes a new state-of-the-art on KD for NLP.  </figcaption>
-      </figure>
-
-<h3>GAL for Prompt-based Few-shot Learning</h3>
+<h3>Few-shot Learning with Synthetic Text </h3>
 <p>
-In addition to the fine-tuning paradigm, we also test GAL on prompt-based few-shot learning, where one can leverage LLMs to correctly predict the inputs' labels by conditioning on a prompt, which consists of an instruction, a few labeled instances, and a new unlabeled input. We apply GAL to prompt-based few-shot learning. Specifically, we present k labeled examples as a prompt to GPT-J, an open-sourced re-implementation of GPT-3-6B, and generate m synthetic examples, followed by the corresponding labels. Note that to mitigate noisy outputs, the generation of each synthetic example only conditions on the original k labeled examples. Finally, we concatenate the original k examples and m synthetic examples, and conduct a (k+m)-shot learning experiment with GPT-J.
+We first test our approach on few-shot learning with GPT-3 6B. GPT-3 proposed a novel approach to conduct few-shot learning. Specifically, as shown in Figure 1, one can craft a prompt consisting of instruction, a few labeled instances, and a new unlabeled text example. GPT-3 will complete the prompt by generating the corresponding label for the unlabeled instance.
 </p> 
       <figure  style="grid-column: text">
-          <img src="images/few_shot.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="display:flex; justify-content: center"> <b>Table 3</b>: Few-shot learning results for GPT-J (6B)<d-cite key="gpt-j"></d-cite> on four NLP datasets. Accuracy is reported for these datasets.  </figcaption>
+          <img src="images/fewshot.gif" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="display:flex; justify-content: center"> <b>Figure 1</b>: Prompt-based few-shot learning.  </figcaption>
+      </figure>
+<p>
+Now, we apply GAL to prompt-based few-shot learning. According to Figure 2, we present k labeled examples as a prompt to GPT-3 6B, and generate m synthetic examples, followed by the corresponding labels. Note that to mitigate noisy outputs, the generation of each synthetic example only conditions on the original k labeled examples. Finally, we concatenate the original k examples and m synthetic examples, and conduct a (k+m)-shot learning experiment with GPT-3 6B.
+</p> 
+      <figure  style="grid-column: text">
+          <img src="images/gal_fewshot.gif" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="display:flex; justify-content: center"> <b>Figure 2</b>: Prompt-based few-shot learning with GAL.  </figcaption>
+      </figure>
+
+      <p>
+      Figure 3 shows that GAL can significantly improve the few-shot learning results by generating more synthetic labeled examples.
+      </p>
+      <figure  style="grid-column: text">
+          <img src="images/fewshot_results.svg" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="display:flex; justify-content: center"> <b>Figure 3</b>: Comparison between standard few-shot learning and GAL.  </figcaption>
+      </figure>
+
+    <h3>Knowledge Distillation with Synthetic Text</h3>
+    
+    <p>
+There is an abundance of unlabeled data in the real world, but task-specific unlabeled data can be challenging to find. For instance, one cannot find in-domain unlabeled text conforming to the input distribution of a specific NLP task from the <a href="https://gluebenchmark.com/">GLUE benchmark</a>. Some NLP tasks require an input comprising a pair of sentences with a particular relationship. If task-specific unlabeled data were available, we could use them knowledge distillation. To fill in this gap, we consider using LLMs as a means of data synthesizer. As shown in Figure 4, we first finetune a GPT2<d-cite key="radford2019language"></d-cite> model on the in-domain data without specified labels to steer LLMs towards generating domain-specific unlabeled data. Afterward, we can generate many in-domain unlabeled data via the tailored GPT2.
+    </p>
+    <figure  style="grid-column: text">
+        <!--<img src="images/overview.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>-->
+        <img src="images/overview.png" style="width: 100%; margin-top: 1rem;"/>
+          <figcaption style="display:flex; justify-content: center">  <b>Figure 4</b>: Synthesizing in-domain data by fine-tuning GPT2  </figcaption>
+    </figure>
+
+      <p>
+      We first train a teacher model from the labeled training data. Then we can annotate the unlabeled data with the aid of the teacher model. Eventually, we can compress the knowledge of the teacher model into a compact student model via the original training data and pseudo-labeled synthetic data. 
+We compare GAL with the following baselines:  BERT-Theseus<d-cite key="xu2020bert"></d-cite>, tinyBERT<d-cite key="jiao2019tinybert"></d-cite>, MATE-KD<d-cite key="rashid2021mate"></d-cite>, DistilRoBERTa<d-cite key="Sanh2019DistilBERTAD"></d-cite>, and DistilRoBERTa + RT (round-trip translation).
+      </p>
+
+      <figure  style="grid-column: text">
+          <img src="images/kd_results.svg" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="justify-content: center"> <b>Figure 5</b>: GLUE test results (average over 8 tasks) for a 6-layer transformer.  GAL establishes a new state-of-the-art on KD for NLP.  </figcaption>
       </figure>
 
 <h3>GAL for Other Classification Tasks </h3>
 <p>
-To demonstrate the universality of GAL, we also employ it for tabular and image classification tasks. According to Table 4 and 5, GAL is effective on tabular and image classification tasks as well.
+To demonstrate the universality of GAL, we also employ it for tabular and image classification tasks. According to Figure 6 and 7, GAL is effective on tabular and image classification tasks as well.
 </p>
       <figure  style="grid-column: text">
-          <img src="images/cv.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="justify-content: center"> <b>Table 4</b>:  Classification error rates on CIFAR-10 (an image classification task) test set with varying amounts of synthetic data for three different model architectures. </figcaption>
+          <img src="images/cifar10_results.svg" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="justify-content: center"> <b>Figure 6</b>:  Classification error rates on CIFAR-10 (an image classification task) test set with varying amounts of synthetic data for three different model architectures. </figcaption>
       </figure>
       
       <figure  style="grid-column: text">
-          <img src="images/table.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="justify-content: center"> <b>Table 5</b>: RoBERTa-base and GAL results on four tabular datasets from the UCI repository.   Accuracy is reported for these datasets. </figcaption>
+          <img src="images/tabular.svg" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
+          <figcaption style="justify-content: center"> <b>Figure 7</b>: RoBERTa-base and GAL results on four tabular datasets from the UCI repository.   Accuracy is reported for these datasets. </figcaption>
       </figure>
 
   <h3>Synthetic Examples</h3>
@@ -324,12 +328,12 @@ To demonstrate the universality of GAL, we also employ it for tabular and image 
   <h4> Synthetic Images</h4>
       <figure  style="grid-column: text">
           <img src="images/gen_img.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="justify-content: center"> <b>Figure 2</b>: CIFAR-10 synthetic samples generated by NCSN and corresponding pseudo-labels. Images are filtered based on a confidence threshold of &tau;=0.95 and categorized based on pseudo-labels. For each category, 16 random samples are shown.</figcaption>
+          <figcaption style="justify-content: center"> <b>Figure 8</b>: CIFAR-10 synthetic samples generated by NCSN and corresponding pseudo-labels. Images are filtered based on a confidence threshold of &tau;=0.95 and categorized based on pseudo-labels. For each category, 16 random samples are shown.</figcaption>
       </figure>
   <h4> Synthetic Text</h4>
       <figure  style="grid-column: text">
           <img src="images/gen_text.png" style="width: 100%; margin-top: 1rem;display: block; margin-left: auto; margin-right: auto;"/>
-          <figcaption style="justify-content: center"> <b>Figure 3</b>: Two labeled examples from QNLI, along with 3 nearest neighbors (based on RoBERTa representations) from our synthetic dataset. We include labels for original examples and pseudo-labels for synthetic examples in parenthesis.</figcaption>
+          <figcaption style="justify-content: center"> <b>Figure 9</b>: Two labeled examples from QNLI, along with 3 nearest neighbors (based on RoBERTa representations) from our synthetic dataset. We include labels for original examples and pseudo-labels for synthetic examples in parenthesis.</figcaption>
       </figure>
       
       
